@@ -1,0 +1,13 @@
+与L298N插线
+
+使能 ENA 驱动右轮 12脚 拔掉跳线帽 插在与IN一排
+使能 ENB 驱动左轮 16脚
+
+Out1 右轮黑线  out2 右轮红线
+Out3 左轮红线  out4 左轮黑线
+
+IN1 7脚   IN2 11脚  右轮逻辑电平  HIGH LOW  正转  LOW HIGH 反转
+IN3 13脚  IN4 15脚  左轮逻辑电平  HIGH LOW  正转  LOW HIGH 反转
+
+注意  L298N要与树莓派共地  298的GND 接39脚
+	    L298N的5v输出接树莓派5V电源处  5V接4脚

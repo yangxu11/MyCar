@@ -78,13 +78,15 @@ def my_car_control():
 
 
 if __name__ == '__main__':
-    global train_labels, train_img, key
+     global train_labels, train_img, key,is_capture_running
 
     print("capture thread")
     print('-' * 50)
     # capture_thread = threading.Thread(target=pi_capture, args=())  # 开启线程
     # capture_thread.setDaemon(True)
     # capture_thread.start()
+
+    is_capture_running = True
 
     my_car_control()
 

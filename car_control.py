@@ -12,8 +12,10 @@ en2 = 16
 
 speed0 = 10#转弯速
 speed1 = 15#低速
-speed2 = 20#中速
+speed2 = 25#中速
 speed3 = 30#快速
+
+special_speed = 28 #右转时快轮的速度  特殊情况
 
 global speedLeft,speedRight
 
@@ -45,6 +47,10 @@ def carInit():
 def carStop():#电机1，2使能关闭
     GPIO.output(en1, GPIO.LOW)
     GPIO.output(en2, GPIO.LOW)
+    GPIO.output(motor1_1, GPIO.LOW)
+    GPIO.output(motor1_2, GPIO.LOW)  # 电机1停转
+    GPIO.output(motor2_1, GPIO.LOW)
+    GPIO.output(motor2_2, GPIO.LOW)  # 电机2停转
 
 #轮子正转
 def wheelForward():
@@ -78,7 +84,7 @@ def carMoveBack():
 def carForwardRight():
     wheelForward()
     carInit()
-    changeSpeed(speed0,speed2)#右轮 转弯速  左轮 低速
+    changeSpeed(speed0,special_speed)#右轮 转弯速  左轮 低速
 
 def carForwardLeft():
     wheelForward()

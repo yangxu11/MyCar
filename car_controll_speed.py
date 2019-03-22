@@ -71,20 +71,20 @@ def changeSpeed(right,left):
     motor1Pwm.ChangeDutyCycle(right) #右轮
     motor2Pwm.ChangeDutyCycle(left)  #左轮
 
-def carMoveForward():
+def carMoveForward(speed):
     wheelForward()
     carInit()
-    changeSpeed(speed1,speed1) #低速
+    changeSpeed(speed,speed) #低速
 
-def carMoveBack():
+def carMoveBack(speed):
     wheelBack()
     carInit()
-    changeSpeed(speed1,speed1) #低速
+    changeSpeed(speed,speed) #低速
 
-def carForwardRight():
+def carForwardRight(speedR,speedL):
     wheelForward()
     carInit()
-    changeSpeed(speed0,special_speed)#右轮 转弯速  左轮 低速
+    changeSpeed(speedR,speedL)#右轮 转弯速  左轮 低速
 
 def carForwardLeft():
     wheelForward()
@@ -114,26 +114,4 @@ def speedDown():
     changeSpeed(speed1,speed1)
 
 if __name__ == '__main__':
-    carMoveForward()
-    time.sleep(2)
-
-    carStop()
-    time.sleep(0.5)
-
-    carMoveBack()
-    time.sleep(2)
-
-    carStop()
-    time.sleep(0.5)
-
-    carMoveForward()
-    time.sleep(1)
-
-    carForwardLeft()
-    time.sleep(1)
-
-    carForwardRight()
-    time.sleep(1)
-
-    carStop()
-    clean()
+    pass

@@ -50,7 +50,7 @@ def pi_capture():
         output = SplitFrames()
         start = time()
         camera.start_recording(output, format='mjpeg')
-        camera.wait_recording(120)
+        camera.wait_recording(10)
         camera.stop_recording()
         finish = time()
     print('Captured %d frames at %.2ffps' % (
@@ -139,8 +139,10 @@ if __name__ == '__main__':
 
     my_car_control()
 
+
     while is_capture_running:
         pass
+
 
     print("Done!")
     car_control.carStop()

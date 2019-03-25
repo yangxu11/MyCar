@@ -14,10 +14,14 @@ speed0 = 10#转弯速
 speed1 = 15#低速
 speed2 = 25#中速
 speed3 = 30#快速
+speed_step = 1
 
 special_speed = 28 #右转时快轮的速度  特殊情况
 
-global speedLeft,speedRight
+global speedLeft,speedRight,speedStraight
+
+
+
 
 GPIO.setmode(GPIO.BOARD)  # 物理引脚board编码格式
 
@@ -38,11 +42,86 @@ motor2Pwm = GPIO.PWM(en2,80)
 motor1Pwm.start(30)  # p.start(dc)   # dc 代表占空比（范围：0.0 <= dc <= 100.0）
 motor2Pwm.start(30)
 
+
+#切换轮子速度
+def changeSpeed(right,left):
+    global speedLeft, speedRight, speedStraight
+    motor1Pwm.ChangeDutyCycle(right) #右轮
+    motor2Pwm.ChangeDutyCycle(left)  #左轮
+    speedRight = right
+    speedLeft = left
+
+def carStraight():
+    carInit()
+    changeSpeed(speedStraight,speedStraight)
+
+def carSpeedUp():
+    global speedLeft, speedRight, speedStraight
+    # if speedLeft != speedRight : return
+    if speedRight + speed_step < 25:
+        speedRight = speedRight + speed_step
+    else:
+        speedRight = 25
+
+    if speedRight + speed_step < 25:
+        speedLeft = speedLeft + speed_step
+    else:
+        speedLeft = 25
+    changeSpeed(speedRight, speedLeft)
+
+def carSpeedDown():
+    global speedLeft, speedRight, speedStraight
+    #if speedLeft != speedRight : return
+    if speedRight-speed_step > 10 :
+        speedRight = speedRight - speed_step
+    else :
+        speedRight = 10
+
+    if speedLeft-speed_step > 10:
+        speedLeft = speedLeft - speed_step
+    else :
+        speedLeft = 10
+    changeSpeed(speedRight,speedLeft)
+
+def carLeft():
+    global speedLeft,speedRight,speedStraight
+    # left减小 或者 right增大
+    if speedRight >= speedLeft:
+        if speedRight < 25:
+            speedRight = speedRight + speed_step
+        else :
+            speedRight = 25
+    else:
+        if speedLeft > 10:
+            speedLeft = speedLeft - speed_step
+        else :
+            speedLeft = 10
+    changeSpeed(speedRight,speedLeft)
+
+
+def carRight():
+    global speedLeft, speedRight, speedStraight
+    #left增大 或者 right减小
+    if speedRight <= speedLeft:
+        if speedLeft < 25:
+            speedLeft = speedLeft + speed_step
+        else:
+            speedRight = 25
+    else:
+        if speedRight > 10:
+            speedRight = speedRight - speed_step
+        else:
+            speedRight = 10
+    changeSpeed(speedRight, speedLeft)
+
+
 #给电机初始短暂的高占空比，使其能动起来
 def carInit():
+    wheelForward()
     motor1Pwm.start(30)  # p.start(dc)   # dc 代表占空比（范围：0.0 <= dc <= 100.0）
     motor2Pwm.start(30)
     time.sleep(0.1)
+    changeSpeed(speed1,speed1)
 
 def carStop():#电机1，2使能关闭
     GPIO.output(en1, GPIO.LOW)
@@ -66,52 +145,18 @@ def wheelBack():
     GPIO.output(motor2_1, GPIO.LOW)
     GPIO.output(motor2_2, GPIO.HIGH)  # 电机2反转
 
-#切换轮子速度
-def changeSpeed(right,left):
-    motor1Pwm.ChangeDutyCycle(right) #右轮
-    motor2Pwm.ChangeDutyCycle(left)  #左轮
+def getSpeedRight():
+    global speedRight
+    return speedRight
 
-def carMoveForward(speed):
-    wheelForward()
-    carInit()
-    changeSpeed(speed,speed) #低速
-
-def carMoveBack(speed):
-    wheelBack()
-    carInit()
-    changeSpeed(speed,speed) #低速
-
-def carForwardRight(speedR,speedL):
-    wheelForward()
-    carInit()
-    changeSpeed(speedR,speedL)#右轮 转弯速  左轮 低速
-
-def carForwardLeft():
-    wheelForward()
-    carInit()
-    changeSpeed(speed2,speed0)#右轮 低速 左轮 转弯速
-
-def carBackRight():
-    wheelBack()
-    carInit()
-    changeSpeed(speed0,speed2)#右轮 转弯速  左轮 低速
-
-def carBackLeft():
-    wheelBack()
-    carInit()
-    changeSpeed(speed2, speed0)#右轮 低速 左轮 转弯速
-
+def getSpeedLeft():
+    global speedLeft
+    return speedLeft
 
 def clean():
     GPIO.cleanup()
     motor1Pwm.stop()
     motor2Pwm.stop()
-
-def speedUp():
-    changeSpeed(speed2,speed2)
-
-def speedDown():
-    changeSpeed(speed1,speed1)
 
 if __name__ == '__main__':
     pass

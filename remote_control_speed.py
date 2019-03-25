@@ -1,5 +1,5 @@
 import io
-import car_control
+import car_controll_speed as car
 import os
 os.environ['SDL_VIDEODRIVE'] = 'x11'
 import pygame     # 检测模块
@@ -7,15 +7,15 @@ from time import ctime,sleep,time
 import threading
 import numpy as np
 
-global train_labels, train_img, is_capture_running, key
+global train_labels, train_img, is_capture_running, key,speedRight,speedLeft
 
 
 def my_car_control():
-    global is_capture_running, key
+    global is_capture_running, key,speedRight,speedLeft
     key = 4
     pygame.init()
     pygame.display.set_mode((1, 1))  # 窗口
-    car_control.carStop()
+    car.carStop()
     sleep(0.1)
     print("Start control!")
 
@@ -31,50 +31,67 @@ def my_car_control():
                 if key_input[pygame.K_w] and not key_input[pygame.K_a] and not key_input[pygame.K_d]:
                     print("Forward")
                     key = 2
-                    car_control.carMoveForward()
+                    car.carSpeedUp()
+                    sleep(0.1)
+                    speedRight = car.getSpeedRight()
+                    speedLeft = car.getSpeedLeft()
                 # 按下左键，保存图片以0开头
                 elif key_input[pygame.K_a]:
                     print("Left")
-                    car_control.carForwardLeft()
+                    car.carLeft()
                     sleep(0.1)
+                    speedRight = car.getSpeedRight()
+                    speedLeft = car.getSpeedLeft()
                     key = 0
                 # 按下d右键，保存图片以1开头
                 elif key_input[pygame.K_d]:
                     print("Right")
-                    car_control.carForwardRight()
+                    car.carRight()
                     sleep(0.1)
+                    speedRight = car.getSpeedRight()
+                    speedLeft = car.getSpeedLeft()
                     key = 1
                 # 按下s后退键，保存图片为3开头
                 elif key_input[pygame.K_s]:
                     print("Backward")
-                    car_control.carMoveBack()
+                    car.carSpeedDown()
+                    sleep(0.1)
+                    speedRight = car.getSpeedRight()
+                    speedLeft = car.getSpeedLeft()
                     key = 3
                 # 按下k停止键，停止
                 elif key_input[pygame.K_k]:
-                    car_control.carStop()
+                    car.carStop()
                     # 按下d右键，保存图片以1开头
+
+                elif key_input[pygame.K_q]:
+                    car.carInit()
 
                 elif key_input[pygame.K_o]:
                     print("Out")
                     is_capture_running = False
                     break
             # 检测按键是不是抬起
-            elif event.type == pygame.KEYUP:
-                key_input = pygame.key.get_pressed()
-                # w键抬起，轮子回正
-                if key_input[pygame.K_w] and not key_input[pygame.K_a] and not key_input[pygame.K_d]:
-                    print("Forward")
-                    key = 2
-                    car_control.carMoveForward()
-                # s键抬起
-                elif key_input[pygame.K_s] and not key_input[pygame.K_a] and not key_input[pygame.K_d]:
-                    print("Backward")
-                    key = 3
-                    car_control.carMoveBack()
-                else:
-                    print("Stop")
-                    car_control.carStop()
-    car_control.clean()
+            # elif event.type == pygame.KEYUP:
+            #     key_input = pygame.key.get_pressed()
+            #     # w键抬起，轮子回正
+            #     if key_input[pygame.K_w] and not key_input[pygame.K_a] and not key_input[pygame.K_d]:
+            #         print("Forward")
+            #         speedRight = car.getSpeedRight()
+            #         speedLeft = car.getSpeedLeft()
+            #         key = 2
+            #         car.carSpeedUp()
+            #     # s键抬起
+            #     elif key_input[pygame.K_s] and not key_input[pygame.K_a] and not key_input[pygame.K_d]:
+            #         print("Backward")
+            #         speedRight = car.getSpeedRight()
+            #         speedLeft = car.getSpeedLeft()
+            #         key = 3
+            #         car.carMoveBack()
+            #     else:
+            #         print("Stop")
+            #         car.carStop()
+    car.clean()
 
 
 if __name__ == '__main__':
@@ -94,5 +111,5 @@ if __name__ == '__main__':
         pass#占位   空语句
 
     print("Done!")
-    car_control.carStop()
-    car_control.clean()
+    car.carStop()
+    car.clean()

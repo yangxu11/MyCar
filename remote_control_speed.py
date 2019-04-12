@@ -71,7 +71,7 @@ def my_car_control():
                     print("Out")
                     is_capture_running = False
                     break
-            # 检测按键是不是抬起
+            # # 检测按键是不是抬起
             # elif event.type == pygame.KEYUP:
             #     key_input = pygame.key.get_pressed()
             #     # w键抬起，轮子回正
@@ -87,7 +87,6 @@ def my_car_control():
             #         speedRight = car.getSpeedRight()
             #         speedLeft = car.getSpeedLeft()
             #         key = 3
-            #         car.carMoveBack()
             #     else:
             #         print("Stop")
             #         car.carStop()

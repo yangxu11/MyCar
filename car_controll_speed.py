@@ -10,8 +10,8 @@ motor2_2 = 15#前左轮
 en1 = 12
 en2 = 16
 
-speed0 = 10#转弯速
-speed1 = 15#低速
+speed0 = 7#转弯速
+speed1 = 10#低速
 speed2 = 25#中速
 speed3 = 30#快速
 speed_step = 1
@@ -39,8 +39,8 @@ GPIO.setup(en2, GPIO.OUT)  # 电机2使能
 
 motor1Pwm = GPIO.PWM(en1,80)# p = GPIO.PWM(channel, frequency)
 motor2Pwm = GPIO.PWM(en2,80)
-motor1Pwm.start(30)  # p.start(dc)   # dc 代表占空比（范围：0.0 <= dc <= 100.0）
-motor2Pwm.start(30)
+# motor1Pwm.start(30)  # p.start(dc)   # dc 代表占空比（范围：0.0 <= dc <= 100.0）
+# motor2Pwm.start(30)
 
 
 #切换轮子速度
@@ -50,10 +50,6 @@ def changeSpeed(right,left):
     motor2Pwm.ChangeDutyCycle(left)  #左轮
     speedRight = right
     speedLeft = left
-
-def carStraight():
-    carInit()
-    changeSpeed(speedStraight,speedStraight)
 
 def carSpeedUp():
     global speedLeft, speedRight, speedStraight

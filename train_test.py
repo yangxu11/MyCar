@@ -26,32 +26,32 @@ INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
 
 npz_batch_size = 30
 
-global npz_batch_index,npz_batch_valid_num,npz_batch_train_num
+global npz_batch_index,npz_valid_num,npz_train_num,npz_num
 
 
 
 # step1,载入数据，并且分割为训练和验证集
 # 问题，数据集太大了，已经超过计算机内存
 def load_data():
-    global npz_batch_index,npz_batch_train_num,npz_batch_valid_num
+    global npz_batch_index,npz_valid_num,npz_train_num,npz_num
 
     training_data = glob.glob('training_data_npz/*.npz')
     # 匹配所有的符合条件的文件，并将其以list的形式返回。
 	
     #得到总npz文件的数量
-    npz_batch_num = len(training_data)
+    npz_num = len(training_data)
     npz_batch_index = 0
-    npz_batch_train_num = round(npz_batch_num*0.9)
-    npz_batch_valid_num = npz_batch_num - npz_batch_train_num
-    npz_batch_train_num = npz_batch_train_num - npz_batch_train_num%npz_batch_size
+    npz_train_num = round(npz_num*0.9)
+    npz_valid_num = npz_num - npz_train_num
+    npz_train_num = npz_train_num - npz_train_num%npz_batch_size
 
-    print("npz总文件数量：",npz_batch_num)
-    print("训练文件数量：",npz_batch_train_num)
-    print("训练文件批次：",round(npz_batch_train_num/30))
-    print("测试文件数量：",npz_batch_valid_num)
+    print("npz总文件数量：",npz_num)
+    print("训练文件数量：",npz_train_num)
+    print("训练文件批次：",round(npz_train_num/30))
+    print("测试文件数量：",npz_valid_num)
     
-    train_data = training_data[0:npz_batch_train_num]
-    valid_data = training_data[npz_batch_train_num:npz_batch_num]
+    train_data = training_data[0 : npz_train_num]
+    valid_data = training_data[npz_train_num : npz_num]
 
     return train_data,valid_data
     
@@ -114,7 +114,7 @@ def train_model(model, learning_rate, nb_epoch, samples_per_epoch,
 # 可以一个batch一个batch进行训练，CPU和GPU同时开工
 def batch_generator(training_data, batch_size):
 
-    global npz_batch_train_num,npz_batch_index
+    global npz_train_num,npz_batch_index
 
     images = np.empty([batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS])
     steers = np.empty([batch_size, 5])
@@ -187,6 +187,7 @@ def get_npz_batch(batch_data):
 
 
 def main():
+	global npz_train_num
     # 打印出超参数
 
     print('-'*30)
@@ -197,7 +198,7 @@ def main():
     keep_prob = 0.5
     learning_rate = 0.0001
     nb_epoch = 100
-    samples_per_epoch = 3000
+    samples_per_epoch = npz_train_num
     batch_size = 30
 
     print('keep_prob = ', keep_prob)

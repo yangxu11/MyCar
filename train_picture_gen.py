@@ -70,8 +70,8 @@ def build_model(keep_prob):
 
 
 # step3 训练模型
-def train_model(model, learning_rate, nb_epoch, samples_per_epoch,
-                batch_size, train_image, train_label):
+def train_model(model, learning_rate, nb_epoch, train_num,valid_num,
+                batch_size, train_image, train_label,valid_image,valid_label):
     # 值保存最好的模型存下来
     checkpoint = ModelCheckpoint('model-{epoch:03d}.h5',
                                  monitor='val_loss',
@@ -96,12 +96,14 @@ def train_model(model, learning_rate, nb_epoch, samples_per_epoch,
     #                                              GT_validation,
     #                                              batch_size)
 
-    model.fit_generator(generator=get_train_batch(train_image,train_label,160,120),
-                        steps_per_epoch=(samples_per_epoch // batch_size),
+    model.fit_generator(generator=get_batch(train_image,train_label,160,120),
+                        steps_per_epoch=(train_num // batch_size),
                         epochs=nb_epoch,
+                        max_queue_size=1,
+                        validation_data=get_batch(valid_image,valid_label,160,120),
+                        validation_steps=(valid_num // batch_size),
                         verbose=2,
                         callbacks=[tensorboard, checkpoint, early_stop],
-                        max_queue_size=1,
                         shuffle=True)
                         # validation_data=my_validation_batch_generator,
                         # validation_steps=(num_validation_samples // batch_size),
@@ -139,7 +141,7 @@ def get_im_cv2(paths,img_cols, img_rows):
     # return np.array(imgs).reshape(len(paths), img_rows, img_cols)
 
 
-def get_train_batch(X_train, y_train, batch_size, img_w, img_h):
+def get_batch(X_train, y_train, batch_size, img_w, img_h):
    '''
    参数：
        X_train：所有图片路径列表
@@ -161,9 +163,8 @@ def get_train_batch(X_train, y_train, batch_size, img_w, img_h):
     for i in range(0, len(X_train), batch_size):
            x = get_im_cv2(X_train[i:i+batch_size], img_w, img_h)
            y = y_train[i:i+batch_size]
-
 # 最重要的就是这个yield，它代表返回，返回以后循环还是会继续，然后再返回。就比如有一个机器一直在作累加运算，但是会把每次累加中间结果告诉你一样，直到把所有数加完
-           yield({'input': x}, {'output': y})
+           yield(x, y)
 def main():
     # 打印出超参数
 
@@ -191,21 +192,32 @@ def main():
 
 
 
-    train_labels = np.zeros((1, 5), 'float')
+    labels = np.zeros((1, 5), 'float')
     print("生成标签矩阵。。。")
     for file in files:
         if not os.path.isdir(file) and file[len(file) - 3:len(file)] == 'jpg':
             try:
                 key = int(file[0])
                 label_array = process_img(path + "/" + file, key)
-                train_labels = np.vstack((train_labels, label_array))
+                labels = np.vstack((labels, label_array))
             except:
                 print('prcess error')
 
-    train_labels = train_labels[1:, :]
+
+    train_num =  round(samples_per_epoch * 0.8)
+    valid_num = samples_per_epoch - train_num
+    train_files = files[0 : train_num]
+    valid_files = files[train_num:,:]
+    train_labels = labels[0:, train_num]
+    valid_labels = labels[train_num:, :]
+
+    print('训练集大小 = ', train_num)
+    print('测试集大小 = ', valid_num)
 
     # 编译模型
     model = build_model(keep_prob)
     # 在数据集上训练模型，保存成model.h5
-    train_model(model, learning_rate, nb_epoch, samples_per_epoch, batch_size,files,train_labels)
+    train_model(model, learning_rate, nb_epoch, train_num,valid_num, batch_size,train_files,train_labels,valid_files,valid_labels)
     print("模型训练完毕")
+if __name__ == '__main__':
+    main()

@@ -16,9 +16,9 @@ class PowerTransferMode:
     def DataGen(self, dir_path, img_row, img_col, batch_size, is_train):
         if is_train:
             datagen = ImageDataGenerator(rescale=1. / 255,
-                                         zoom_range=0.25, rotation_range=15.,
+                                         zoom_range=0.25, rotation_range=0.,
                                          channel_shift_range=25., width_shift_range=0.02, height_shift_range=0.02,
-                                         horizontal_flip=True, fill_mode='constant')
+                                         horizontal_flip=False, fill_mode='constant')
         else:
             datagen = ImageDataGenerator(rescale=1. / 255)
 
@@ -31,7 +31,7 @@ class PowerTransferMode:
         return generator
 
     # ResNet模型
-    def ResNet50_model(self, lr=0.005, decay=1e-6, momentum=0.9, nb_classes=2, img_rows=197, img_cols=197, RGB=True,
+    def ResNet50_model(self, lr=0.005, decay=1e-6, momentum=0.9, nb_classes=2, img_rows=224, img_cols=224, RGB=True,
                        is_plot_model=False):
         color = 3 if RGB else 1
         base_model = ResNet50(weights='imagenet', include_top=False, pooling=None,
@@ -152,7 +152,7 @@ class PowerTransferMode:
 
 
 if __name__ == '__main__':
-    image_size = 197
+    image_size = 224
     batch_size = 32
 
     transfer = PowerTransferMode()
